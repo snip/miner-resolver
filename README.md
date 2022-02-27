@@ -10,7 +10,7 @@ If ping is success, it will be added to local miner peer table. And then the min
 ## Installation
 From the miner get relased binary:
 ```
-wget xxxx -O /tmp/miner-resolver_arm64
+wget https://github.com/snip/miner-resolver/releases/download/0.0.0b1/miner-resolver_arm64 -O /tmp/miner-resolver_arm64
 chmod +x /tmp/miner-resolver_arm64
 ```
 
