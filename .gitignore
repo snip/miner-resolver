@@ -4,6 +4,8 @@
 *.dll
 *.so
 *.dylib
+miner-resolver
+miner-resolver_arm64
 
 # Test binary, built with `go test -c`
 *.test
