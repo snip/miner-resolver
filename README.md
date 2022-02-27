@@ -32,3 +32,19 @@ Cross compiling for miner:
 ```
 env GOOS=linux GOARCH=arm64 go build -o miner-resolver_arm64
 ```
+
+
+## Example of success execution
+```
+2022-02-27 12:36:05.459 25 [warning] <0.28578.3>@miner_onion_server:send_witness:{243,37} failed to dial challenger "/p2p/112NTMRPGUYdiYMyVGwX1QWNJspjLmGwZLzJDRpQdLjNoEEMLZCS": not_found
+New witness
+2022-02-27 12:36:35.591 25 [warning] <0.28578.3>@miner_onion_server:send_witness:{243,37} failed to dial challenger "/p2p/112NTMRPGUYdiYMyVGwX1QWNJspjLmGwZLzJDRpQdLjNoEEMLZCS": not_found
+Already existing. Count: 1
+Do action with: 112NTMRPGUYdiYMyVGwX1QWNJspjLmGwZLzJDRpQdLjNoEEMLZCS
+p2p addr from API: /ip4/173.176.240.170/tcp/44158
+exec command: balena exec --interactive $(balena ps --filter name=^helium-miner --format "{{.ID}}") miner peer ping /ip4/173.176.240.170/tcp/44158 2>&1
+exec command output: Pinged "/ip4/173.176.240.170/tcp/44158" successfully with roundtrip time: 144 ms
+
+2022-02-27 12:37:06.186 25 [info] <0.28578.3>@miner_onion_server:send_witness:{251,37} successfully sent witness to challenger "/p2p/112NTMRPGUYdiYMyVGwX1QWNJspjLmGwZLzJDRpQdLjNoEEMLZCS" with RSSI: -92, Frequency: 867.1, SNR: -15.2
+Deleting entry
+```
