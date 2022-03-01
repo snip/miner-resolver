@@ -62,15 +62,15 @@ func doMinerPing(addr string) {
 	fmt.Printf("exec command output: %s",out)
 }
 
-func getP2pAddrFromJson(HSjson []byte) ([]interface{}) {
+func getP2pAddrFromJson(HSjson []byte) ([]interface{},bool) {
 	var result map[string]interface{}
 
 
 	json.Unmarshal(HSjson, &result)
 
-	data := ((result["data"].(map[string]interface{}))["status"].(map[string]interface{}))["listen_addrs"].([]interface{})
+	data, ok := ((result["data"].(map[string]interface{}))["status"].(map[string]interface{}))["listen_addrs"].([]interface{})
 
-	return data
+	return data,ok
 }
 
 func doApiRequest(address string) ([]byte) {
@@ -127,9 +127,14 @@ func main() {
 				if (val.count >= 2) && (val.actionFired == false) { // More than 2 retries
 					fmt.Println("Do action with: " + val.address)
 					json := doApiRequest(val.address)
-					for _, address := range getP2pAddrFromJson(json) {
-						fmt.Println("p2p addr from API: "+address.(string))
-						doMinerPing(address.(string))
+					adresses, ok := getP2pAddrFromJson(json)
+					if ok {
+						for _, address := range adresses {
+							fmt.Println("p2p addr from API: "+address.(string))
+							doMinerPing(address.(string))
+						}
+					} else {
+						fmt.Println("No address found from API => Ignoring")
 					}
 					val.actionFired = true
 				}
