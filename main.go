@@ -118,6 +118,8 @@ func main() {
 	reSendWitnessFailedSend := regexp.MustCompile(`\[error\] <(.+)>@miner_onion_server:send_witness:.* failed to send witness`)
 	reSendWitnessSuccess := regexp.MustCompile(`\[info\] <(.+)>@miner_onion_server:send_witness:.* successfully sent witness to challenger`)
 	reSuccessfully := regexp.MustCompile(`successfully`)
+	// /p2p/112b9HMf5YSFeBnFJkv2mQnFECn91Q4xmWpsJt62WMXoqwbu1ucM/p2p-circuit/p2p/112Wnq8peTKWfQVei6GTkCGPmF2CuVhtMjgyBmz2aJizeJE9dgC6
+	reRelayedAddress := regexp.MustCompile(`/p2p/(.+)/p2p-circuit/p2p/`)
 
 	for line := range t.Lines {
 		matches := reSendWitnessFailedDial.FindStringSubmatch(line.Text)
@@ -133,6 +135,22 @@ func main() {
 					if ok {
 						for _, address := range adresses {
 							fmt.Println("p2p addr from API: "+address.(string))
+							matches := reRelayedAddress.FindStringSubmatch(address.(string))
+							if (matches != nil) {
+								fmt.Println("Relayed address detecter. We need to ping this relay first ("+matches[1]+")")
+								json := doApiRequest(matches[1])
+								adresses, ok := getP2pAddrFromJson(json)
+								if ok {
+									for _, address := range adresses { // try to ping all relay address
+										fmt.Println("p2p relay addr from API: "+address.(string))
+										resultmessage := string(doMinerPing(address.(string)))
+										if (reSuccessfully.FindStringSubmatch(resultmessage) != nil) {
+											fmt.Println("Successfull ping peer => end of ping relay work")
+											break
+										}
+									}
+								}
+							}
 							resultmessage := string(doMinerPing(address.(string)))
 							if (reSuccessfully.FindStringSubmatch(resultmessage) != nil) {
 								fmt.Println("Successfull ping peer => end of ping work")
