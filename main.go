@@ -39,7 +39,7 @@ balena exec --interactive --tty $(balena ps --filter name=^helium-miner --format
 */
 
 const softwareName = "miner-resolver"
-const softwareVersion = "0.0.0b1"
+const softwareVersion = "0.0.0b2"
 
 type WitnessStatus struct {
 	address string
