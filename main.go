@@ -51,7 +51,7 @@ type WitnessStatus struct {
 
 var ongoingWitness = map[string]WitnessStatus{}
 
-func doMinerPing(addr string) {
+func doMinerPing(addr string) ([]byte) {
 	cmd := `balena exec --interactive $(balena ps --filter name=^helium-miner --format "{{.ID}}") miner peer ping `+addr+` 2>&1`
 	fmt.Printf("exec command: %s\n",cmd)
 
@@ -60,6 +60,7 @@ func doMinerPing(addr string) {
 		fmt.Printf("%s\n", err)
 	}
 	fmt.Printf("exec command output: %s",out)
+	return out
 }
 
 func getP2pAddrFromJson(HSjson []byte) ([]interface{},bool) {
@@ -116,6 +117,7 @@ func main() {
 	reSendWitnessFailedDial := regexp.MustCompile(`\[warning\] <(.+)>@miner_onion_server:send_witness:.*failed to dial.*"/p2p/(\w+)".*`)
 	reSendWitnessFailedSend := regexp.MustCompile(`\[error\] <(.+)>@miner_onion_server:send_witness:.* failed to send witness`)
 	reSendWitnessSuccess := regexp.MustCompile(`\[info\] <(.+)>@miner_onion_server:send_witness:.* successfully sent witness to challenger`)
+	reSuccessfully := regexp.MustCompile(`successfully`)
 
 	for line := range t.Lines {
 		matches := reSendWitnessFailedDial.FindStringSubmatch(line.Text)
@@ -131,7 +133,11 @@ func main() {
 					if ok {
 						for _, address := range adresses {
 							fmt.Println("p2p addr from API: "+address.(string))
-							doMinerPing(address.(string))
+							resultmessage := string(doMinerPing(address.(string)))
+							if (reSuccessfully.FindStringSubmatch(resultmessage) != nil) {
+								fmt.Println("Successfull ping peer => end of ping work")
+								break
+							}
 						}
 					} else {
 						fmt.Println("No address found from API => Ignoring")
