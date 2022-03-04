@@ -23,6 +23,11 @@ From the miner:
 
 ## Building
 
+Install dependencies:
+```
+go get github.com/hpcloud/tail
+```
+
 Normal build:
 ```
 go build -o miner-resolver
