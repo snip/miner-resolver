@@ -39,7 +39,7 @@ balena exec --interactive --tty $(balena ps --filter name=^helium-miner --format
 */
 
 const softwareName = "miner-resolver"
-const softwareVersion = "0.0.0b2"
+const softwareVersion = "0.0.0b3"
 
 type WitnessStatus struct {
 	address string
@@ -63,13 +63,20 @@ func doMinerPing(addr string) ([]byte) {
 	return out
 }
 
-func getP2pAddrFromJson(HSjson []byte) ([]interface{},bool) {
-	var result map[string]interface{}
+func getP2pAddrFromJson(HSjson []byte) (data []interface{},ok bool) {
+	defer func() { // Prevent panic
+		if err := recover(); err != nil {
+			log.Println("panic occurred:", err)
+			data = nil
+			ok = false
+		}
+	}()
 
+	var result map[string]interface{}
 
 	json.Unmarshal(HSjson, &result)
 
-	data, ok := ((result["data"].(map[string]interface{}))["status"].(map[string]interface{}))["listen_addrs"].([]interface{})
+	data, ok = ((result["data"].(map[string]interface{}))["status"].(map[string]interface{}))["listen_addrs"].([]interface{})
 
 	return data,ok
 }
