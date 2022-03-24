@@ -20,6 +20,10 @@ From the miner:
 /tmp/miner-resolver_arm64
 ```
 
+## Or with an endless loop for auto restart
+```
+while true; do /tmp/miner-resolver_arm64; sleep 120; done
+```
 
 ## Building
 
